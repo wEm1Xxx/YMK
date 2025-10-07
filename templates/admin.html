@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<body>
+<header>
+    <div class="d-flex justify-content-between">
+        <p>Администратор</p>
+        <a href="{{ url_for('logout') }}" class="out2"><p class="out">Выйти</p></a>
+    </div>
+    </header>
+<div class="container admin">
+    <div class="">
+        <a href="/group_edit" class="btn btn-primary group_box2">Изменение групп</a>
+    </div>
+
+    <a href="/edit_user" class="btn btn-primary group_box2">Управление пользователями</a>
+    <a href="/edit_practika" class="btn btn-primary group_box2">Управление практикой</a>
+</div>
+
+</body>
+{% endblock %}

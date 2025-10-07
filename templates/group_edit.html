@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+{% block content %}
+<body>
+    <header>
+        <div class="d-flex justify-content-between">
+            <p>Администратор</p>
+            <a href="{{ url_for('logout') }}" class="out2"><p class="out">Выйти</p></a>
+        </div>
+    </header>
+
+    <div class="ramka container">
+        <!-- 1 курс -->
+        <h2>1 курс</h2>
+        <div class="kyrs4 row mb-4 g-3">
+            {% for group in groups if group.course == '1' %}
+            <div class="col-md-3 col-sm-4 col-6">
+                <a href="/list_students/{{group.id}}" class="btn btn-primary group_box">{{group.name}}</a>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <p>Нет групп для 1 курса</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 2 курс -->
+        <h2 class="h4k">2 курс</h2>
+        <div class="kyrs4 row mb-4 g-3">
+            {% for group in groups if group.course == '2' %}
+            <div class="col-md-3 col-sm-4 col-6">
+                <a href="/list_students/{{group.id}}" class="btn btn-primary group_box">{{group.name}}</a>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <p>Нет групп для 2 курса</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 3 курс -->
+        <h2 class="h4k">3 курс</h2>
+        <div class="kyrs4 row mb-4 g-3">
+            {% for group in groups if group.course == '3' %}
+            <div class="col-md-3 col-sm-4 col-6">
+                <a href="/list_students/{{group.id}}" class="btn btn-primary group_box">{{group.name}}</a>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <p>Нет групп для 3 курса</p>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- 4 курс -->
+        <h2 class="h4k">4 курс</h2>
+        <div class="kyrs4 row mb-4 g-3">
+            {% for group in groups if group.course == '4' %}
+            <div class="col-md-3 col-sm-4 col-6">
+                <a href="/list_students/{{group.id}}" class="btn btn-primary group_box">{{group.name}}</a>
+            </div>
+            {% else %}
+            <div class="col-12">
+                <p>Нет групп для 4 курса</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="buttons">
+        <!-- Кнопка добавления группы -->
+        <button type="button" id="addButton" data-bs-toggle="modal" data-bs-target="#addGroupModal" class="btn btn-primary group_box3">Добавить группу</button>
+
+        <!-- Кнопка удаления группы -->
+        <button type="button" id="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteGroupModal" class="btn btn-primary group_box4">Удалить группу</button>
+    </div>
+
+    <!-- Модальное окно добавления группы -->
+    <div class="modal fade" id="addGroupModal" tabindex="-1" aria-labelledby="addGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addGroupModalLabel">Добавить группу</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ url_for('add_group') }}" id="groupForm">
+                        <div class="input-group mb-3" style="min-width: 100%;">
+                            <input type="text" class="form-control" placeholder="Введите сокращенное название группы"
+                                   name="name" required style="min-width: 200px;" id="groupNameInput">
+                            <button class="btn btn-outline-secondary dropdown-toggle" type="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false" id="courseDropdownButton">
+                                Выберите курс
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end" id="courseDropdownMenu">
+                                <li><a class="dropdown-item" href="#" data-value="1">1 курс</a></li>
+                                <li><a class="dropdown-item" href="#" data-value="2">2 курс</a></li>
+                                <li><a class="dropdown-item" href="#" data-value="3">3 курс</a></li>
+                                <li><a class="dropdown-item" href="#" data-value="4">4 курс</a></li>
+                            </ul>
+                            <input type="hidden" name="course" id="selectedCourse" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления группы -->
+<div class="modal fade" id="deleteGroupModal" tabindex="-1" aria-labelledby="deleteGroupModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteGroupModalLabel">Удалить группу</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <div class="modal-body">
+                <!-- ИЗМЕНИТЕ ЭТУ ФОРМУ - добавьте action и method -->
+                <form method="POST" action="{{ url_for('delete_group') }}" id="deleteGroupForm">
+                    <div class="mb-3">
+                        <label for="groupSelect" class="form-label">Выберите группу для удаления:</label>
+                        <select class="form-select" id="groupSelect" name="group_id" required>
+                            <option value="" selected disabled>-- Выберите группу --</option>
+                            {% for group in groups %}
+                            <option value="{{ group.id }}">{{ group.name }} ({{ group.course }} курс)</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                        <!-- ИЗМЕНИТЕ КНОПКУ - сделайте ее type="submit" -->
+                        <button type="submit" class="btn btn-danger">Удалить</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+{% endblock %}
