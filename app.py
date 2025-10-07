@@ -30,7 +30,7 @@ def user_loader(id):
 def home():
     title = "Вход"
     message = ''
-
+######
 
     #Проверка метода
     if request.method == 'POST':
