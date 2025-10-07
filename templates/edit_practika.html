@@ -1,20 +1,54 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <body>
 <header>
     <div class="d-flex justify-content-between">
         <p>Администратор</p>
-        <a href="{{ url_for('logout') }}" class="out2"><p class="out">Выйти</p></a>
+        <a href="/vhod" class="out2"><p class="out">Назад</p></a>
     </div>
     </header>
-<div class="container admin">
-    <div class="">
-        <a href="" class="btn btn-primary group_box2">без</a>
-    </div>
+    <div class="container">
+            <h1 class="namegr">Практика</h1>
 
-    <a href="" class="btn btn-primary group_box2">лишних</a>
-    <a href="" class="btn btn-primary group_box2">слов</a>
-</div>
+        <div class="verh">
+            <div>
+                <h5>Наименование практики</h5>
+            </div>
+            <div>
+                <h5>Модульное имя</h5>
+            </div>
+        </div>
+
+
+                    <div class="ramka-1">
+                        <ol class="list_students">
+                            {% for practice in practice %}
+                                <li class="student-item">
+                                    <span style="width: 20px;">
+                                       {{ loop.index }}.
+                                    </span>
+
+                                    <span class="user-name">
+                                        {{ practice.practice_name }}
+                                    </span>
+
+                                    <span class="user-id">
+                                        {{ practice.module_name }}
+                                    </span>
+                                    <input type="checkbox" name="selected_students" value="{{ practice.id }}" class="student-checkbox">
+                                </li>
+                                <hr class="hli">
+                            {% endfor %}
+                        </ol>
+                    </div>
+                    <div class="button-container">
+                        <button type="submit" id="edit_3_Button" class="btn btn-primary group_box5">Добавить ПМ</button>
+                        <button type="submit" id="edit_2_Button" class="btn btn-primary group_box5">Изменить ПМ</button>
+                        <button type="submit" id="nextButton" class="btn btn-primary group_box5">Удалить ПМ</button>
+                    </div>
+
+    </div>
 
 </body>
 {% endblock %}

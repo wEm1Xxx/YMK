@@ -1,20 +1,44 @@
 {% extends 'base.html' %}
 {% block content %}
+
 <body>
 <header>
     <div class="d-flex justify-content-between">
         <p>Администратор</p>
-        <a href="{{ url_for('logout') }}" class="out2"><p class="out">Выйти</p></a>
+        <a href="/vhod" class="out2"><p class="out">Назад</p></a>
     </div>
     </header>
-<div class="container admin">
-    <div class="">
-        <a href="" class="btn btn-primary group_box2">Меня</a>
-    </div>
+    <div class="container">
+            <h1 class="namegr">Пользователи</h1>
 
-    <a href="" class="btn btn-primary group_box2">Тоже</a>
-    <a href="" class="btn btn-primary group_box2">Пж</a>
-</div>
+
+                    <div class="ramka-1">
+                        <ol class="list_students">
+                            {% for user in users %}
+                                <li class="student-item">
+                                    <span style="width: 20px;">
+                                       {{ loop.index }}.
+                                    </span>
+
+                                    <span class="user-name">
+                                        {{ user.login }}
+                                    </span>
+
+                                    <span class="user-id">
+                                        {{ user.role_id }}
+                                    </span>
+                                    <input type="checkbox" name="selected_students" value="{{ user.id }}" class="student-checkbox">
+                                </li>
+                                <hr class="hli">
+                            {% endfor %}
+                        </ol>
+                    </div>
+                    <div class="button-container">
+                        <button type="submit" id="edit_2_Button" class="btn btn-primary group_box5">Изменить роль</button>
+                        <button type="submit" id="nextButton" class="btn btn-primary group_box5">Удалить пользователя</button>
+                    </div>
+
+        </div>
 
 </body>
 {% endblock %}

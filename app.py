@@ -10,6 +10,7 @@ import io
 from datetime import datetime
 
 from Controllers.GroupsController import GroupsController
+from Controllers.Production_practiceController import Production_practiceController
 from Controllers.StudentsController import StudentsController
 from Controllers.UserController import UsersController
 
@@ -138,12 +139,12 @@ def edit():
 @application.route('/edit_user', methods=['POST', 'GET'])
 @login_required
 def edit_user():
-    title = "Изменение студентов"
+    title = "Изменение пользователями"
     if current_user.role_id.id == 1:
-        groups = GroupsController.get()
+        users = UsersController.get()
 
         return render_template('edit_user.html',
-                               title=title, groups=groups)
+                               title=title, users=users)
     else:
         return redirect('/logout')
 
@@ -152,10 +153,10 @@ def edit_user():
 def edit_practika():
     title = "Изменение Практики"
     if current_user.role_id.id == 1:
-        groups = GroupsController.get()
+        practice = Production_practiceController.get()
 
         return render_template('edit_practika.html',
-                               title=title, groups=groups)
+                               title=title, practice=practice)
     else:
         return redirect('/logout')
 

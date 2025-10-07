@@ -58,3 +58,4 @@ if __name__ == '__main__':
     #UsersController.registration('max33', 'M00nL1ght', '3')
     #UsersController.registration('user2','user2',2)
     #print(UsersController.auth('user1','user1'))
+    #UsersController.registration('happy_day','123123')
