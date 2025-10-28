@@ -13,7 +13,7 @@ from Controllers.GroupsController import GroupsController
 from Controllers.Production_practiceController import Production_practiceController
 from Controllers.StudentsController import StudentsController
 from Controllers.UserController import UsersController
-#тест
+
 # создать объект класса Flask
 application = Flask(__name__)
 application.secret_key = 'la'
