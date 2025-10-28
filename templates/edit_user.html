@@ -24,8 +24,14 @@
                                         {{ user.login }}
                                     </span>
 
-                                    <span class="user-id">
-                                        {{ user.role_id }}
+                                    <span class="user-role">
+                                        {% if user.role_id.id == 1 %}
+                                            Администратор
+                                        {% elif user.role_id.id == 2 %}
+                                            Преподаватель
+                                        {% else %}
+                                            Неизвестная роль
+                                        {% endif %}
                                     </span>
                                     <input type="checkbox" name="selected_students" value="{{ user.id }}" class="student-checkbox">
                                 </li>
