@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, send_file, url_for, current_app
+from flask import Flask, render_template, request, redirect, send_file, url_for, current_app, flash
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from Controllers.Files_PracticeController import *
 from docxtpl import DocxTemplate
@@ -26,18 +26,17 @@ def user_loader(id):
 # Маршрут главной страницы
 # добавить методы работы с данными POST и GET
 
-@application.route('/', methods = ['POST', 'GET'])
+@application.route('/', methods=['POST', 'GET'])
 def home():
     title = "Вход"
     message = ''
-######
 
-    #Проверка метода
+    # Проверка метода
     if request.method == 'POST':
         login = request.form.get('login')
         password = request.form.get('password')
         if UsersController.auth(login, password):
-            #Создает сессию для пользователя который прошел аутентификацию
+            # Создает сессию для пользователя который прошел аутентификацию
             user = UsersController.show_login(login)
             login_user(user)
             print(user)
@@ -49,11 +48,11 @@ def home():
         else:
             message = 'Не верный логин или пароль'
     return render_template('index.html',
-                           title = title,
-                           message = message
+                           title=title,
+                           message=message
                            )
 
-@application.route('/registracia', methods = ['POST', 'GET'])
+@application.route('/registracia', methods=['POST', 'GET'])
 def registration_site():
     title = 'Регистрация'
     message = ''
@@ -76,36 +75,30 @@ def registration_site():
                 message = 'Пароли не совпадают'
         else:
             message = 'Ошибка авторизации после регистрации'
-        # else:
-        #     message = 'Такой логин уже существует'
 
-    return render_template('registration.html', title=title,message=message)
+    return render_template('registration.html', title=title, message=message)
 
-@application.route('/vhod', methods = ['POST', 'GET'])
+@application.route('/vhod', methods=['POST', 'GET'])
 @login_required
 def vhod():
-        title = "Адммин панель"
-        if current_user.role_id.id == 1:
-            groups = GroupsController.get()
+    title = "Адммин панель"
+    if current_user.role_id.id == 1:
+        groups = GroupsController.get()
+        return render_template('admin.html',
+                               title=title, groups=groups)
+    else:
+        return redirect('/logout')
 
-
-
-            return render_template('admin.html',
-                                   title=title, groups=groups)
-        else:
-            return redirect('/logout')
-
-@application.route('/vhod2', methods = ['POST', 'GET'])
+@application.route('/vhod2', methods=['POST', 'GET'])
 @login_required
 def vhod2():
-        title = "Группы студентов"
-        if current_user.role_id.id == 2:
-            groups = GroupsController.get()
-
-            return render_template('group_students.html',
-                                   title=title, groups=groups)
-        else:
-            return redirect('/logout')
+    title = "Группы студентов"
+    if current_user.role_id.id == 2:
+        groups = GroupsController.get()
+        return render_template('group_students.html',
+                               title=title, groups=groups)
+    else:
+        return redirect('/logout')
 
 @application.route('/list_students/<int:group_id>', methods=['POST', 'GET'])
 @login_required
@@ -113,13 +106,14 @@ def studenti(group_id):
     title = "Студенты"
     if current_user.role_id.id == 2:
         students = StudentsController.show_group(group_id)
-        group=GroupsController.show(group_id)
-        group_name = students[0].group_id.name if students else "Группа не найдена"  # Берём название из первого студента
+        group = GroupsController.show(group_id)
+        group_name = students[
+            0].group_id.name if students else "Группа не найдена"  # Берём название из первого студента
         return render_template('list_students.html',
-                             title=title,
-                             students=students,
-                             group_name=group_name,
-                            group=group
+                               title=title,
+                               students=students,
+                               group_name=group_name,
+                               group=group
                                )
     else:
         return redirect('/logout')
@@ -130,7 +124,6 @@ def edit():
     title = "Изменение групп"
     if current_user.role_id.id == 1:
         groups = GroupsController.get()
-
         return render_template('group_edit.html',
                                title=title, groups=groups)
     else:
@@ -139,14 +132,112 @@ def edit():
 @application.route('/edit_user', methods=['POST', 'GET'])
 @login_required
 def edit_user():
-    title = "Изменение пользователями"
+    title = "Управление пользователями"
     if current_user.role_id.id == 1:
         users = UsersController.get()
-
         return render_template('edit_user.html',
                                title=title, users=users)
     else:
         return redirect('/logout')
+
+
+# Маршрут для добавления пользователя
+@application.route('/add_user', methods=['POST'])
+@login_required
+def add_user():
+    if current_user.role_id.id == 1:
+        flash('Доступ запрещен', 'error')
+        return redirect('/edit_user')
+
+    if request.method == 'POST':
+        login = request.form.get('login')
+        password = request.form.get('password')
+        role_id = request.form.get('role_id')
+
+        if not all([login, password, role_id]):
+            flash('Все поля обязательны для заполнения', 'error')
+            return redirect('/edit_user')
+
+        try:
+            # Проверяем, нет ли уже пользователя с таким логином
+            if UsersController.show_login(login):
+                flash('Пользователь с таким логином уже существует', 'error')
+                return redirect('/edit_user')
+
+            # Создаем нового пользователя
+            if UsersController.registration(login, password, role_id):
+                flash('Пользователь успешно добавлен', 'success')
+            else:
+                flash('Ошибка при добавлении пользователя', 'error')
+
+        except Exception as e:
+            flash(f'Ошибка при добавлении пользователя: {str(e)}', 'error')
+
+    return redirect('/edit_user')
+
+
+# Маршрут для изменения роли пользователя
+@application.route('/update_user_role', methods=['POST'])
+@login_required
+def update_user_role():
+    if current_user.role_id.id == 1:
+        flash('Доступ запрещен', 'error')
+        return redirect('/edit_user')
+
+    if request.method == 'POST':
+        user_ids = request.form.getlist('user_ids')
+        new_role = request.form.get('new_role')
+
+        if not user_ids or not new_role:
+            flash('Не выбраны пользователи или роль', 'error')
+            return redirect('/edit_user')
+
+        try:
+            # Не позволяем изменить роль самому себе
+            if str(current_user.id) in user_ids:
+                flash('Нельзя изменить роль самому себе', 'error')
+                return redirect('/edit_user')
+
+            # Обновляем роли пользователей используя существующий метод update
+            for user_id in user_ids:
+                UsersController.update(int(user_id), role_id=int(new_role))
+
+            flash('Роли пользователей успешно обновлены', 'success')
+        except Exception as e:
+            flash(f'Ошибка при обновлении ролей: {str(e)}', 'error')
+
+    return redirect('/edit_user')
+
+# Маршрут для удаления пользователей
+@application.route('/delete_users', methods=['POST'])
+@login_required
+def delete_users():
+    if current_user.role_id.id == 1:
+        flash('Доступ запрещен', 'error')
+        return redirect('/edit_user')
+
+    if request.method == 'POST':
+        user_ids = request.form.getlist('user_ids')
+
+        if not user_ids:
+            flash('Не выбраны пользователи для удаления', 'error')
+            return redirect('/edit_user')
+
+        try:
+            # Не позволяем удалить самого себя
+            if str(current_user.id) in user_ids:
+                flash('Нельзя удалить самого себя', 'error')
+                return redirect('/edit_user')
+
+            # Удаляем пользователей
+            for user_id in user_ids:
+                UsersController.delete(int(user_id))
+
+            flash('Пользователи успешно удалены', 'success')
+        except Exception as e:
+            flash(f'Ошибка при удалении пользователей: {str(e)}', 'error')
+
+    return redirect('/edit_user')
 
 @application.route('/edit_practika', methods=['POST', 'GET'])
 @login_required
@@ -154,7 +245,6 @@ def edit_practika():
     title = "Изменение Практики"
     if current_user.role_id.id == 1:
         practice = Production_practiceController.get()
-
         return render_template('edit_practika.html',
                                title=title, practice=practice)
     else:
@@ -171,17 +261,108 @@ def data_students(student_id):
         group_name = student.group_id.name if student.group_id else "Группа не указана"
 
         return render_template('data_students.html',
-                           title="Выбор нужных документов",
-                           student=student,
-                           group_name=group_name)
+                               title="Выбор нужных документов",
+                               student=student,
+                               group_name=group_name)
     else:
         return redirect('/logout')
+
+
+# Маршрут для страницы управления практиками
+@application.route('/edit_practika', methods=['POST', 'GET'])
+@login_required
+def edit_practice():
+    title = "Управление практиками"
+    if current_user.role_id.id == 1:
+        practice = Production_practiceController.get()
+        return render_template('edit_practika.html',
+                               title=title, practice=practice)
+    else:
+        return redirect('/logout')
+
+
+# Маршрут для добавления практики
+@application.route('/add_practice', methods=['POST'])
+@login_required
+def add_practice():
+    if current_user.role_id.id == 1:
+        flash('Доступ запрещен', 'error')
+        return redirect('/edit_practika')
+
+    if request.method == 'POST':
+        practice_name = request.form.get('practice_name')
+        module_name = request.form.get('module_name')
+
+        if not all([practice_name, module_name]):
+            flash('Все поля обязательны для заполнения', 'error')
+            return redirect('/edit_practika')
+
+        try:
+            Production_practiceController.add(practice_name, module_name)
+            flash('Практика успешно добавлена', 'success')
+        except Exception as e:
+            flash(f'Ошибка при добавлении практики: {str(e)}', 'error')
+
+    return redirect('/edit_practika')
+
+
+# Маршрут для обновления практики
+@application.route('/update_practice', methods=['POST'])
+@login_required
+def update_practice():
+    if current_user.role_id.id == 1:
+        flash('Доступ запрещен', 'error')
+        return redirect('/edit_practika')
+
+    if request.method == 'POST':
+        practice_ids = request.form.getlist('practice_ids')
+        practice_name = request.form.get('practice_name')
+        module_name = request.form.get('module_name')
+
+        if not all([practice_ids, practice_name, module_name]):
+            flash('Все поля обязательны для заполнения', 'error')
+            return redirect('/edit_practika')
+
+        try:
+            for practice_id in practice_ids:
+                Production_practiceController.update(int(practice_id), practice_name=practice_name,
+                                                     module_name=module_name)
+            flash('Практики успешно обновлены', 'success')
+        except Exception as e:
+            flash(f'Ошибка при обновлении практик: {str(e)}', 'error')
+
+    return redirect('/edit_practika')
+
+
+# Маршрут для удаления практик
+@application.route('/delete_practices', methods=['POST'])
+@login_required
+def delete_practices():
+    if current_user.role_id.id == 1:
+        flash('Доступ запрещен', 'error')
+        return redirect('/edit_practika')
+
+    if request.method == 'POST':
+        practice_ids = request.form.getlist('practice_ids')
+
+        if not practice_ids:
+            flash('Не выбраны практики для удаления', 'error')
+            return redirect('/edit_practika')
+
+        try:
+            for practice_id in practice_ids:
+                Production_practiceController.delete(int(practice_id))
+            flash('Практики успешно удалены', 'success')
+        except Exception as e:
+            flash(f'Ошибка при удалении практик: {str(e)}', 'error')
+
+    return redirect('/edit_practika')
 
 
 @application.route('/fill_data_students/<int:student_id>', methods=['GET', 'POST'])
 @login_required
 def zapolnenie_dokumentov(student_id):
-    if current_user.role_id.id != 2:
+    if current_user.role_id.id == 2:
         return redirect('/logout')
 
     student = StudentsController.show(student_id)
@@ -319,7 +500,6 @@ def generate_documents(students, form_data):
                 'specialization': student.specialization,
                 'birth_date': student.date_of_birth,
                 'course': student.group_id.course,
-
             }
 
             # Генерация документов
@@ -369,11 +549,11 @@ def student_form(student_id):
     student = StudentsController.show(student_id)
     return render_template('form.html', student=student)
 
-#добавление группы
+# добавление группы
 @application.route('/add_group', methods=['POST'])
 @login_required
 def add_group():
-    if current_user.role_id.id != 1:
+    if current_user.role_id.id == 1:
         return redirect('/logout')
 
     if request.method == 'POST':
@@ -391,11 +571,11 @@ def add_group():
 
     return redirect('/group_edit')
 
-#удаление группы
+# удаление группы
 @application.route('/delete_group', methods=['POST'])
 @login_required
 def delete_group():
-    if current_user.role_id.id != 1:
+    if current_user.role_id.id == 1:
         return redirect('/logout')
 
     if request.method == 'POST':

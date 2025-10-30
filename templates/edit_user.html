@@ -11,39 +11,144 @@
     <div class="container">
             <h1 class="namegr">Пользователи</h1>
 
+            <!-- Модальное окно добавления пользователя -->
+            <div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="addUserModalLabel">Добавить пользователя</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="{{ url_for('add_user') }}" id="addUserForm">
+                                <div class="mb-3">
+                                    <label for="loginInput" class="form-label">Логин:</label>
+                                    <input type="text" class="form-control" id="loginInput" name="login" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="passwordInput" class="form-label">Пароль:</label>
+                                    <input type="password" class="form-control" id="passwordInput" name="password" required>
+                                </div>
+                                <div class="mb-3">
 
-                    <div class="ramka-1">
-                        <ol class="list_students">
-                            {% for user in users %}
-                                <li class="student-item">
-                                    <span style="width: 20px;">
-                                       {{ loop.index }}.
-                                    </span>
-
-                                    <span class="user-name">
-                                        {{ user.login }}
-                                    </span>
-
-                                    <span class="user-role">
-                                        {% if user.role_id.id == 1 %}
-                                            Администратор
-                                        {% elif user.role_id.id == 2 %}
-                                            Преподаватель
-                                        {% else %}
-                                            Неизвестная роль
-                                        {% endif %}
-                                    </span>
-                                    <input type="checkbox" name="selected_students" value="{{ user.id }}" class="student-checkbox">
-                                </li>
-                                <hr class="hli">
-                            {% endfor %}
-                        </ol>
+                                    <label for="roleSelect" class="form-label">Роль:</label>
+                                    <select class="form-select" id="roleSelect" name="role_id" required>
+                                        <option value="" selected disabled>-- Выберите роль --</option>
+                                        <option value="1">Администратор</option>
+                                        <option value="2">Преподаватель</option>
+                                    </select>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                                    <button type="submit" class="btn btn-primary">Добавить</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
-                    <div class="button-container">
-                        <button type="submit" id="addButton" class="btn btn-primary group_box5">Добавить пользователя</button>
-                        <button type="submit" id="edit_2_Button" class="btn btn-primary group_box5">Изменить роль</button>
-                        <button type="submit" id="nextButton" class="btn btn-primary group_box5">Удалить пользователя</button>
+                </div>
+            </div>
+
+            <!-- Модальное окно изменения роли -->
+            <div class="modal fade" id="editRoleModal" tabindex="-1" aria-labelledby="editRoleModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="editRoleModalLabel">Изменить роль пользователя</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="{{ url_for('update_user_role') }}" id="editRoleForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Выбранные пользователи:</label>
+                                    <div id="selectedUsersList" class="selected-users-list">
+                                        <!-- Сюда будет динамически добавляться список выбранных пользователей -->
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="newRoleSelect" class="form-label">Новая роль:</label>
+                                    <select class="form-select" id="newRoleSelect" name="new_role" required>
+                                        <option value="" selected disabled>-- Выберите новую роль --</option>
+                                        <option value="1">Администратор</option>
+                                        <option value="2">Преподаватель</option>
+                                    </select>
+                                </div>
+                                <div id="selectedUsersInputs">
+                                    <!-- Сюда будут добавляться скрытые input с ID выбранных пользователей -->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                    <button type="submit" class="btn btn-primary">Изменить роль</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
+                </div>
+            </div>
+
+            <!-- Модальное окно удаления пользователя -->
+            <div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h1 class="modal-title fs-5" id="deleteUserModalLabel">Удалить пользователя</h1>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                        </div>
+                        <div class="modal-body">
+                            <form method="POST" action="{{ url_for('delete_users') }}" id="deleteUserForm">
+                                <div class="mb-3">
+                                    <label class="form-label">Выбранные пользователи для удаления:</label>
+                                    <div id="usersToDeleteList" class="selected-users-list">
+                                        <!-- Сюда будет динамически добавляться список пользователей для удаления -->
+                                    </div>
+                                </div>
+                                <div class="alert alert-warning">
+                                    <strong>Внимание!</strong> Это действие нельзя отменить. Вы уверены, что хотите удалить выбранных пользователей?
+                                </div>
+                                <div id="usersToDeleteInputs">
+                                    <!-- Сюда будут добавляться скрытые input с ID пользователей для удаления -->
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                                    <button type="submit" class="btn btn-danger">Удалить</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ramka-1">
+                <ol class="list_students">
+                    {% for user in users %}
+                        <li class="student-item">
+                            <span style="width: 20px;">
+                               {{ loop.index }}.
+                            </span>
+
+                            <span class="user-name">
+                                {{ user.login }}
+                            </span>
+
+                            <span class="user-role">
+                                {% if user.role_id.id == 1 %}
+                                    Администратор
+                                {% elif user.role_id.id == 2 %}
+                                    Преподаватель
+                                {% else %}
+                                    Неизвестная роль
+                                {% endif %}
+                            </span>
+                            <input type="checkbox" name="selected_students" value="{{ user.id }}" class="student-checkbox">
+                        </li>
+                        <hr class="hli">
+                    {% endfor %}
+                </ol>
+            </div>
+            <div class="button-container">
+                <button type="button" id="addButton" data-bs-toggle="modal" data-bs-target="#addUserModal" class="btn btn-primary group_box5">Добавить пользователя</button>
+                <button type="button" id="editRoleButton" data-bs-toggle="modal" data-bs-target="#editRoleModal" class="btn btn-primary group_box5">Изменить роль</button>
+                <button type="button" id="deleteButton" data-bs-toggle="modal" data-bs-target="#deleteUserModal" class="btn btn-primary group_box5">Удалить пользователя</button>
+            </div>
 
         </div>
 
