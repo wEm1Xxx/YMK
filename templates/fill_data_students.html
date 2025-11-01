@@ -55,6 +55,22 @@
             <hr class="hli2">
         </section>
 
+                <!-- Дополнительные поля -->
+        <section class="rykPr" id="rykPr">
+            <h3>Практика</h3>
+            <div class="form-group">
+                    <div class="mb-3">
+                        <select class="form-select" id="practiceSelect" name="practice_id" required>
+                            <option value="" selected disabled> Выберите Практику </option>
+                            {% for practice in practice %}
+                                <option value="{{ production_practice.id }}">{{ production_practice.practice_name }} ({{ production_practice.module_name }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+            </div>
+            <hr class="hli2">
+        </section>
+
         <!-- Кнопки -->
         <section class="knopki">
             <button type="submit" class="sohra">

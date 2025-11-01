@@ -65,3 +65,28 @@ function initializeDeleteGroup() {
         });
     }
 }
+// Обработчик для модального окна удаления группы
+document.addEventListener('DOMContentLoaded', function() {
+    const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+    const groupSelect = document.getElementById('groupSelect');
+    const groupToDeleteName = document.getElementById('groupToDeleteName');
+    const confirmGroupId = document.getElementById('confirmGroupId');
+
+    if (confirmDeleteBtn && groupSelect) {
+        confirmDeleteBtn.addEventListener('click', function() {
+            const selectedOption = groupSelect.options[groupSelect.selectedIndex];
+            if (selectedOption.value) {
+                // Заполняем данные в модальном окне подтверждения
+                groupToDeleteName.textContent = selectedOption.text;
+                confirmGroupId.value = selectedOption.value;
+
+                // Закрываем первое модальное окно и открываем подтверждение
+                const deleteModal = bootstrap.Modal.getInstance(document.getElementById('deleteGroupModal'));
+                const confirmModal = new bootstrap.Modal(document.getElementById('confirmDeleteModal'));
+
+                deleteModal.hide();
+                confirmModal.show();
+            }
+        });
+    }
+});

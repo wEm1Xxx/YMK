@@ -7,48 +7,144 @@
         <p>Администратор</p>
         <a href="/vhod" class="out2"><p class="out">Назад</p></a>
     </div>
-    </header>
-    <div class="container">
-            <h1 class="namegr">Практика</h1>
+</header>
 
-        <div class="verh">
-            <div>
-                <h5>Наименование практики</h5>
-            </div>
-            <div>
-                <h5>Модульное имя</h5>
+<div class="container">
+    <h1 class="namegr">Практика</h1>
+
+    <div class="verh">
+        <div>
+            <h5>Наименование практики</h5>
+        </div>
+        <div>
+            <h5>Модульное имя</h5>
+        </div>
+    </div>
+
+    <!-- Модальное окно добавления практики -->
+    <div class="modal fade" id="addPracticeModal" tabindex="-1" aria-labelledby="addPracticeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="addPracticeModalLabel">Добавить ПМ</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/add_practice" id="addPracticeForm">
+                        <div class="mb-3">
+                            <label for="practiceNameInput" class="form-label">Наименование практики:</label>
+                            <input type="text" class="form-control" id="practiceNameInput" name="practice_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="moduleNameInput" class="form-label">Модульное имя:</label>
+                            <input type="text" class="form-control" id="moduleNameInput" name="module_name" required>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+                            <button type="submit" class="btn btn-primary">Добавить</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-
-
-                    <div class="ramka-1">
-                        <ol class="list_students">
-                            {% for practice in practice %}
-                                <li class="student-item">
-                                    <span style="width: 20px;">
-                                       {{ loop.index }}.
-                                    </span>
-
-                                    <span class="user-name">
-                                        {{ practice.practice_name }}
-                                    </span>
-
-                                    <span class="user-id">
-                                        {{ practice.module_name }}
-                                    </span>
-                                    <input type="checkbox" name="selected_students" value="{{ practice.id }}" class="student-checkbox">
-                                </li>
-                                <hr class="hli">
-                            {% endfor %}
-                        </ol>
-                    </div>
-                    <div class="button-container">
-                        <button type="submit" id="edit_3_Button" class="btn btn-primary group_box5">Добавить ПМ</button>
-                        <button type="submit" id="edit_2_Button" class="btn btn-primary group_box5">Изменить ПМ</button>
-                        <button type="submit" id="nextButton" class="btn btn-primary group_box5">Удалить ПМ</button>
-                    </div>
-
     </div>
+
+    <!-- Модальное окно изменения практики -->
+    <div class="modal fade" id="editPracticeModal" tabindex="-1" aria-labelledby="editPracticeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="editPracticeModalLabel">Изменить ПМ</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="/update_practice" id="editPracticeForm">
+                        <div class="mb-3">
+                            <label class="form-label">Выбранные практики:</label>
+                            <div id="selectedPracticesList" class="selected-practices-list">
+                                <!-- Сюда будет динамически добавляться список выбранных практик -->
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editPracticeNameInput" class="form-label">Новое наименование практики:</label>
+                            <input type="text" class="form-control" id="editPracticeNameInput" name="practice_name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="editModuleNameInput" class="form-label">Новое модульное имя:</label>
+                            <input type="text" class="form-control" id="editModuleNameInput" name="module_name" required>
+                        </div>
+                        <div id="selectedPracticesInputs">
+                            <!-- Сюда будут добавляться скрытые input с ID выбранных практик -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-primary">Изменить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальное окно удаления практики -->
+    <div class="modal fade" id="deletePracticeModal" tabindex="-1" aria-labelledby="deletePracticeModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deletePracticeModalLabel">Удалить ПМ</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="POST" action="{{ url_for('delete_practices') }}" id="deletePracticeForm">
+                        <div class="mb-3">
+                            <label class="form-label">Выбранные практики для удаления:</label>
+                            <div id="practicesToDeleteList" class="selected-practices-list">
+                                <!-- Сюда будет динамически добавляться список практик для удаления -->
+                            </div>
+                        </div>
+                        <div class="alert alert-warning">
+                            <strong>Внимание!</strong> Это действие нельзя отменить. Вы уверены, что хотите удалить выбранные практики?
+                        </div>
+                        <div id="practicesToDeleteInputs">
+                            <!-- Сюда будут добавляться скрытые input с ID практик для удаления -->
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-danger">Удалить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="ramka-1">
+        <ol class="list_students">
+            {% for practice in practice %}
+                <li class="student-item">
+                    <span style="width: 20px;">
+                       {{ loop.index }}.
+                    </span>
+                    <span class="user-name">
+                        {{ practice.practice_name }}
+                    </span>
+                    <span class="user-id">
+                        {{ practice.module_name }}
+                    </span>
+                    <input type="checkbox" name="selected_practices" value="{{ practice.id }}" class="student-checkbox">
+                </li>
+                <hr class="hli">
+            {% endfor %}
+        </ol>
+    </div>
+
+    <div class="button-container">
+        <button type="button" id="addPracticeButton" data-bs-toggle="modal" data-bs-target="#addPracticeModal" class="btn btn-primary group_box5">Добавить ПМ</button>
+        <button type="button" id="editPracticeButton" data-bs-toggle="modal" data-bs-target="#editPracticeModal" class="btn btn-primary group_box5">Изменить ПМ</button>
+        <button type="button" id="deletePracticeButton" data-bs-toggle="modal" data-bs-target="#deletePracticeModal" class="btn btn-primary group_box5">Удалить ПМ</button>
+    </div>
+
+</div>
 
 </body>
 {% endblock %}

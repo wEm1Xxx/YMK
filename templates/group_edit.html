@@ -109,36 +109,61 @@
         </div>
     </div>
 
-    <!-- Модальное окно удаления группы -->
-<div class="modal fade" id="deleteGroupModal" tabindex="-1" aria-labelledby="deleteGroupModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h1 class="modal-title fs-5" id="deleteGroupModalLabel">Удалить группу</h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
-            </div>
-            <div class="modal-body">
-                <!-- ИЗМЕНИТЕ ЭТУ ФОРМУ - добавьте action и method -->
-                <form method="POST" action="{{ url_for('delete_group') }}" id="deleteGroupForm">
-                    <div class="mb-3">
-                        <label for="groupSelect" class="form-label">Выберите группу для удаления:</label>
-                        <select class="form-select" id="groupSelect" name="group_id" required>
-                            <option value="" selected disabled>-- Выберите группу --</option>
-                            {% for group in groups %}
-                            <option value="{{ group.id }}">{{ group.name }} ({{ group.course }} курс)</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                        <!-- ИЗМЕНИТЕ КНОПКУ - сделайте ее type="submit" -->
-                        <button type="submit" class="btn btn-danger">Удалить</button>
-                    </div>
-                </form>
+    <!-- Модальное окно выбора группы для удаления -->
+    <div class="modal fade" id="deleteGroupModal" tabindex="-1" aria-labelledby="deleteGroupModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="deleteGroupModalLabel">Удалить группу</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="selectGroupForm">
+                        <div class="mb-3">
+                            <label for="groupSelect" class="form-label">Выберите группу для удаления:</label>
+                            <select class="form-select" id="groupSelect" name="group_id" required>
+                                <option value="" selected disabled>-- Выберите группу --</option>
+                                {% for group in groups %}
+                                <option value="{{ group.id }}">{{ group.name }} ({{ group.course }} курс)</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Удалить</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
-</div>
+
+    <!-- Модальное окно подтверждения удаления группы -->
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="confirmDeleteModalLabel">Подтверждение удаления</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <p>Вы действительно хотите удалить группу <strong id="groupToDeleteName"></strong>?</p>
+                        <div class="alert alert-warning">
+                            <strong>Внимание!</strong> Это действие нельзя отменить. Все данные группы будут удалены.
+                        </div>
+                    </div>
+                    <form method="POST" action="{{ url_for('delete_group') }}" id="deleteGroupForm">
+                        <input type="hidden" name="group_id" id="confirmGroupId">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                            <button type="submit" class="btn btn-danger">Да, удалить</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
 </body>
 {% endblock %}
