@@ -145,7 +145,7 @@ def edit_user():
 @application.route('/add_user', methods=['POST'])
 @login_required
 def add_user():
-    if current_user.role_id.id == 1:
+    if current_user.role_id.id != 1:
         flash('Доступ запрещен', 'error')
         return redirect('/edit_user')
 
@@ -180,7 +180,7 @@ def add_user():
 @application.route('/update_user_role', methods=['POST'])
 @login_required
 def update_user_role():
-    if current_user.role_id.id == 1:
+    if current_user.role_id.id != 1:
         flash('Доступ запрещен', 'error')
         return redirect('/edit_user')
 
@@ -212,7 +212,7 @@ def update_user_role():
 @application.route('/delete_users', methods=['POST'])
 @login_required
 def delete_users():
-    if current_user.role_id.id == 1:
+    if current_user.role_id.id != 1:
         flash('Доступ запрещен', 'error')
         return redirect('/edit_user')
 
@@ -285,7 +285,7 @@ def edit_practice():
 @application.route('/add_practice', methods=['POST'])
 @login_required
 def add_practice():
-    if current_user.role_id.id == 1:
+    if current_user.role_id.id != 1:
         flash('Доступ запрещен', 'error')
         return redirect('/edit_practika')
 
@@ -310,7 +310,7 @@ def add_practice():
 @application.route('/update_practice', methods=['POST'])
 @login_required
 def update_practice():
-    if current_user.role_id.id == 1:
+    if current_user.role_id.id != 1:
         flash('Доступ запрещен', 'error')
         return redirect('/edit_practika')
 
@@ -338,7 +338,7 @@ def update_practice():
 @application.route('/delete_practices', methods=['POST'])
 @login_required
 def delete_practices():
-    if current_user.role_id.id == 1:
+    if current_user.role_id.id != 1:
         flash('Доступ запрещен', 'error')
         return redirect('/edit_practika')
 
@@ -553,7 +553,7 @@ def student_form(student_id):
 @application.route('/add_group', methods=['POST'])
 @login_required
 def add_group():
-    if current_user.role_id.id == 1:
+    if current_user.role_id.id != 1:
         return redirect('/logout')
 
     if request.method == 'POST':
@@ -575,7 +575,7 @@ def add_group():
 @application.route('/delete_group', methods=['POST'])
 @login_required
 def delete_group():
-    if current_user.role_id.id == 1:
+    if current_user.role_id.id != 1:
         return redirect('/logout')
 
     if request.method == 'POST':
