@@ -362,7 +362,7 @@ def delete_practices():
 @application.route('/fill_data_students/<int:student_id>', methods=['GET', 'POST'])
 @login_required
 def zapolnenie_dokumentov(student_id):
-    if current_user.role_id.id == 2:
+    if current_user.role_id.id != 2:
         return redirect('/logout')
 
     student = StudentsController.show(student_id)
