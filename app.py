@@ -366,6 +366,7 @@ def zapolnenie_dokumentov(student_id):
         return redirect('/logout')
 
     student = StudentsController.show(student_id)
+    practice = Production_practiceController.get()
 
     if request.method == 'POST':
         try:
@@ -412,7 +413,7 @@ def zapolnenie_dokumentov(student_id):
     # GET запрос - отображаем форму
     return render_template('fill_data_students.html',
                            title="Заполнение документов",
-                           student=student)
+                           student=student, practice=practice)
 
 
 @application.route('/data-students-multiple', methods=['POST'])

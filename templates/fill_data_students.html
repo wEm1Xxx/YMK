@@ -1,16 +1,5 @@
 {% extends 'base.html' %}
 {% block content %}
-    <style>
-        .student-item {
-            margin: 10px 0;
-            padding: 10px;
-            background: #f8f9fa;
-            border-radius: 5px;
-        }
-        .student-item label {
-            margin-left: 10px;
-        }
-    </style>
 <body>
     <header>
         <a href="{{ url_for('logout') }}" class="out2"><p class="out">Выйти</p></a>
@@ -42,8 +31,6 @@
             <hr class="hli2">
         </section>
 
-
-
         <!-- Дополнительные поля -->
         <section class="rykYch" id="rykYch">
             <h3>Методический Руководитель</h3>
@@ -55,18 +42,18 @@
             <hr class="hli2">
         </section>
 
-                <!-- Дополнительные поля -->
+        <!-- Дополнительные поля -->
         <section class="rykPr" id="rykPr">
             <h3>Практика</h3>
             <div class="form-group">
-                    <div class="mb-3">
-                        <select class="form-select" id="practiceSelect" name="practice_id" required>
-                            <option value="" selected disabled> Выберите Практику </option>
-                            {% for practice in practice %}
-                                <option value="{{ production_practice.id }}">{{ production_practice.practice_name }} ({{ production_practice.module_name }})</option>
-                            {% endfor %}
-                        </select>
-                    </div>
+                <div class="mb-3 practice-select-container">
+                    <select class="form-select form-practice" id="practiceSelect" name="practice_id" required>
+                        <option value="" selected disabled>Выберите Практику</option>
+                        {% for practice in practice %}
+                            <option value="{{ practice.id }}">{{ practice.practice_name }} ({{ practice.module_name }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
             </div>
             <hr class="hli2">
         </section>
@@ -82,7 +69,6 @@
 
     <script>
         document.getElementById('docsForm').addEventListener('submit', function(e) {
-            // Проверка обязательных полей
             const required = this.querySelectorAll('[required]');
             let isValid = true;
 
@@ -95,7 +81,6 @@
                 }
             });
 
-            // Для группового режима проверяем выбор студентов
             {% if not student %}
                 const checked = document.querySelectorAll('input[name="student_ids"]:checked');
                 if (checked.length === 0) {
@@ -110,5 +95,4 @@
         });
     </script>
 </body>
-
 {% endblock %}
